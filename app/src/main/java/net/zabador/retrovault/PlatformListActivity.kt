@@ -2,6 +2,7 @@ package net.zabador.retrovault
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,8 +14,16 @@ import retrofit2.Retrofit
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
+import kotlinx.android.synthetic.main.activity_game_list.*
+import net.zabador.retrovault.adapter.PlatformRecyclerAdapter
+import net.zabador.retrovault.dto.PlatformDto
 
-class GameListActivity : AppCompatActivity() {
+
+class PlatformListActivity : AppCompatActivity() {
+
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var adapter: PlatformRecyclerAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,14 +48,22 @@ class GameListActivity : AppCompatActivity() {
 
         val gameDatabaseApi = retrofit.create(GameDatabaseApi::class.java)
 
+        linearLayoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = linearLayoutManager
+
         gameDatabaseApi.getPlatformList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe ({
                     platformListDataDto ->
-                    Log.d("Result", "There are ${platformListDataDto.platforms.size} Java developers in Lagos")
+                    showPlatforms(platformListDataDto.platforms)
                 }, { error ->
                     error.printStackTrace()
                 })
+    }
+
+    fun showPlatforms(platforms: ArrayList<PlatformDto>) {
+        adapter = PlatformRecyclerAdapter(platforms)
+        recyclerView.adapter = adapter
     }
 }

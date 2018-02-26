@@ -1,6 +1,5 @@
 package net.zabador.retrovault.dto
 
-import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Root
 
